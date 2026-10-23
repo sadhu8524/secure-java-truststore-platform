@@ -1,0 +1,25 @@
+name: Validate examples
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check shell syntax
+        run: find scripts -name '*.sh' -exec bash -n {} \;
+      - name: Parse YAML
+        run: |
+          python -m pip install --disable-pip-version-check pyyaml
+          python - <<'PYCODE'
+          import pathlib, yaml
+          for f in pathlib.Path('examples').rglob('*.yaml'):
+              list(yaml.safe_load_all(f.read_text()))
+              print('OK', f)
+          PYCODE
+      - name: Check placeholders are not accidentally removed
+        run: grep -q IMAGE_REPLACE_ME examples/java-app/deployment.yaml
+# Add pinned Trivy, Kyverno CLI, kubeconform and kind/OpenShift integration gates.
