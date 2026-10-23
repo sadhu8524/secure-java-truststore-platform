@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: java-truststore-settings
+  namespace: demo-java
+data:
+  trustStore: /etc/java-trust/truststore.jks
+  trustStoreType: JKS
+  # Never put truststore passwords in a ConfigMap.

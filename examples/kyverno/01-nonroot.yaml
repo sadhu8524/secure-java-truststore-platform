@@ -1,0 +1,19 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: {name: require-non-root}
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: check-pods
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [demo-java]
+      validate:
+        message: "Pod must explicitly request non-root execution."
+        pattern:
+          spec:
+            securityContext:
+              runAsNonRoot: true

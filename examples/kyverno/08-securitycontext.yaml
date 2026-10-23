@@ -1,0 +1,27 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: {name: require-security-context}
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: require-context
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [demo-java]
+      validate:
+        message: "Explicit restricted pod/container security context is required."
+        pattern:
+          spec:
+            securityContext:
+              runAsNonRoot: true
+              seccompProfile:
+                type: RuntimeDefault
+            containers:
+              - securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                      - ALL

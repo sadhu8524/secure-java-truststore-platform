@@ -1,0 +1,17 @@
+# Source Secret must be in trust-manager's configured trust namespace.
+# ConfigMap target contains ONLY public CA certificates.
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: enterprise-ca-pem
+spec:
+  sources:
+    - secret:
+        name: internal-root-ca
+        key: tls.crt
+  target:
+    configMap:
+      key: ca-bundle.pem
+    namespaceSelector:
+      matchLabels:
+        trust.platform.example.com/enabled: "true"

@@ -1,0 +1,21 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: {name: disallow-privileged}
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: check-pods
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [demo-java]
+      validate:
+        message: "Privileged and privilege-escalating containers are forbidden."
+        pattern:
+          spec:
+            containers:
+              - securityContext:
+                  X(privileged): "null"
+                  allowPrivilegeEscalation: false

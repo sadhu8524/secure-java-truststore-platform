@@ -1,0 +1,9 @@
+# LAB ONLY: source secret is created by scripts/create-lab-ca.sh
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: lab-ca
+  namespace: trust-system
+spec:
+  ca:
+    secretName: internal-root-ca

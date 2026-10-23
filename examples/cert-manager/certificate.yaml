@@ -1,0 +1,20 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: java-demo-server
+  namespace: trust-system
+spec:
+  secretName: java-demo-server-tls
+  commonName: java-demo.demo-java.svc
+  dnsNames:
+    - java-demo.demo-java.svc
+    - java-demo.demo-java.svc.cluster.local
+  duration: 2160h
+  renewBefore: 360h
+  privateKey:
+    algorithm: RSA
+    size: 3072
+    rotationPolicy: Always
+  issuerRef:
+    name: lab-ca
+    kind: Issuer

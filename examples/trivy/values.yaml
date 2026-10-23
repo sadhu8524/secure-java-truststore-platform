@@ -1,0 +1,12 @@
+# Helm values for Aqua Trivy Operator; pin a compatible chart release.
+trivy:
+  ignoreUnfixed: true
+  severity: "HIGH,CRITICAL"
+operator:
+  scanJobTimeout: "5m"
+  vulnerabilityScannerEnabled: true
+  configAuditScannerEnabled: true
+  rbacAssessmentScannerEnabled: true
+  exposedSecretScannerEnabled: true
+  infraAssessmentScannerEnabled: true
+  metricsFindingsEnabled: true

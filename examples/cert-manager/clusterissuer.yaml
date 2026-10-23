@@ -1,0 +1,9 @@
+# REFERENCE ONLY. For ClusterIssuer CA, secret resides in cert-manager's
+# cluster-resource-namespace (often cert-manager), not trust-system.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: enterprise-ca
+spec:
+  ca:
+    secretName: enterprise-signing-ca # provision externally; contains CA private key

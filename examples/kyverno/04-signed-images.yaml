@@ -1,0 +1,30 @@
+# CUSTOMIZE BEFORE ENFORCING. Replace public key and image patterns with real values.
+# Keyless Sigstore verification can be configured using attestors with identities.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: {name: verify-signed-images}
+spec:
+  validationFailureAction: Audit
+  background: false
+  webhookTimeoutSeconds: 30
+  rules:
+    - name: verify-image-signature
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [demo-java]
+      verifyImages:
+        - imageReferences:
+            - "registry.example.com/platform/*"
+          mutateDigest: true
+          verifyDigest: true
+          required: true
+          attestors:
+            - count: 1
+              entries:
+                - keys:
+                    publicKeys: |-
+                      -----BEGIN PUBLIC KEY-----
+                      REPLACE_WITH_COSIGN_PUBLIC_KEY
+                      -----END PUBLIC KEY-----

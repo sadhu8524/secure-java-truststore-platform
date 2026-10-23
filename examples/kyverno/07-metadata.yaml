@@ -1,0 +1,22 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: {name: require-platform-metadata}
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: require-labels-and-annotation
+      match:
+        any:
+          - resources:
+              kinds: [Deployment]
+              namespaces: [demo-java]
+      validate:
+        message: "Deployments need application and owner metadata."
+        pattern:
+          metadata:
+            labels:
+              app.kubernetes.io/name: "?*"
+              app.kubernetes.io/part-of: "?*"
+            annotations:
+              platform.example.com/owner: "?*"

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: trust-system
+  labels:
+    app.kubernetes.io/part-of: secure-java-truststore-platform
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo-java
+  labels:
+    trust.platform.example.com/enabled: "true"
+    app.kubernetes.io/part-of: secure-java-truststore-platform

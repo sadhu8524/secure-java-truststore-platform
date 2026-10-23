@@ -1,0 +1,30 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata: {name: require-truststore-mount}
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: require-truststore-for-java
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [demo-java]
+              selector:
+                matchLabels:
+                  app.kubernetes.io/name: java-tls-demo
+      validate:
+        message: "Java demo must mount the managed truststore Secret read-only."
+        pattern:
+          spec:
+            volumes:
+              - name: truststore
+                secret:
+                  secretName: enterprise-java-truststores
+            containers:
+              - name: app
+                volumeMounts:
+                  - name: truststore
+                    mountPath: /etc/java-trust
+                    readOnly: true

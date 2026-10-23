@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-tls-demo
+  namespace: demo-java
+  labels:
+    app.kubernetes.io/name: java-tls-demo
+    app.kubernetes.io/part-of: secure-java-truststore-platform
+  annotations:
+    platform.example.com/owner: platform-team
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: java-tls-demo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: java-tls-demo
+        app.kubernetes.io/part-of: secure-java-truststore-platform
+      annotations:
+        platform.example.com/owner: platform-team
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: app
+          image: IMAGE_REPLACE_ME # replace with signed digest-pinned image in approved registry
+          imagePullPolicy: IfNotPresent
+          command: ["java"]
+          args: ["-jar", "/app/app.jar"]
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Djavax.net.ssl.trustStore=/etc/java-trust/truststore.jks -Djavax.net.ssl.trustStoreType=JKS"
+            - name: JAVA_TRUSTSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: java-truststore-password
+                  key: password
+          # Do not put a production password in JAVA_TOOL_OPTIONS or CLI args.
+          # Application bootstrap must read JAVA_TRUSTSTORE_PASSWORD and configure
+          # javax.net.ssl.trustStorePassword programmatically before TLS init.
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: truststore
+              mountPath: /etc/java-trust
+              readOnly: true
+      volumes:
+        - name: truststore
+          secret:
+            secretName: enterprise-java-truststores
+            defaultMode: 0444

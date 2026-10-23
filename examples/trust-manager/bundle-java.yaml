@@ -1,0 +1,28 @@
+# Requires trust-manager Secret targets + additionalFormats support.
+# Check CRD/schema against installed trust-manager version before applying.
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: enterprise-java-truststores
+spec:
+  sources:
+    - secret:
+        name: internal-root-ca
+        key: tls.crt
+  target:
+    secret:
+      key: ca-bundle.pem
+    namespaceSelector:
+      matchLabels:
+        trust.platform.example.com/enabled: "true"
+    additionalFormats:
+      jks:
+        key: truststore.jks
+        passwordSecretRef:
+          name: truststore-password
+          key: password
+      pkcs12:
+        key: truststore.p12
+        passwordSecretRef:
+          name: truststore-password
+          key: password
